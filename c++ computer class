@@ -1,0 +1,170 @@
+// ConsoleApplication1.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iostream>
+using namespace std;
+
+enum CPU_Rank {P1 = 1,P2,P3,P4,P5,P6,P7};
+enum RAM_Type {DDR2 = 1,DDR3,DDR4};
+enum CDROM_Ctype {SATA = 1, USB};
+enum CDROM_Btype { external = 1, built_in };
+
+class CPU {
+private:
+	CPU_Rank rank;
+	int frequency;
+	float voltage;
+
+public:
+	CPU(CPU_Rank r, int f, float v) {
+		rank = r;
+		frequency = f;
+		voltage = v;
+		cout << "CPU构造成功" << endl;
+	}
+	~CPU() {
+		cout << "CPU析构成功"<< endl;  //析构函数不能有参数和返回值
+		cout << "**********************************************" << endl;  // 析构函数在return 0之前执行
+	}
+
+	// 接下来是外部接口,之所以是外部接口，是因为可以通过调用public部分的成员函数来(1)改变(2)调用private的值
+	CPU_Rank getRank() const { return rank; }
+	int getFrequency() const { return frequency; }
+	float getVoltage() const { return voltage; }
+
+	void setRank(CPU_Rank r) { rank = r; }
+	void setFrequency(int f) { frequency = f; }
+	void setVoltage(float v) { voltage = v; }
+
+	//显示启动和关闭CPU的成员函数
+	void run() { cout << "CPU开始工作" << endl; }
+	void end() { cout << "CPU停止工作" << endl; }
+};
+
+class RAM {
+private:
+	RAM_Type type;
+	int storage;
+	float frequency;
+
+public:
+	RAM(RAM_Type t, int s, float f) {
+		type = t;
+		storage = s;
+		frequency = f;
+		cout << "RAM构造成功" << endl;
+	}
+	~RAM() {
+		cout << "RAM析构成功" << endl;
+		cout << "**********************************************" << endl;
+	}
+
+	// 接下来是外部接口,之所以是外部接口，是因为可以通过调用public部分的成员函数来(1)改变(2)调用private的值
+	RAM_Type getType() const { return type; }
+	int getStorage() const { return storage; }
+	float getFrequency() const { return frequency; }
+
+	void setRank(RAM_Type r) { type = r; }
+	void setStorage(int s) { storage = s; }
+	void setFrequency(float f) { frequency = f; }
+
+	//显示启动和关闭RAM的成员函数
+	void run() { cout << "RAM开始工作" << endl; }
+	void end() { cout << "RAM停止工作" << endl; }
+};
+
+class CDROM {
+private:
+	CDROM_Btype btype;
+	CDROM_Ctype ctype;
+	int storage;
+public:
+	CDROM(CDROM_Btype bt, CDROM_Ctype ct, int s) {
+		btype = bt;
+		ctype = ct;
+		storage = s;
+		cout << "CDROM构造成功" << endl;
+	}
+	~CDROM() {
+		cout << "CDROM析构成功" << endl;
+		cout << "**********************************************" << endl;
+	}
+
+	// 接下来是外部接口,之所以是外部接口，是因为可以通过调用public部分的成员函数来(1)改变(2)调用private的值
+	CDROM_Btype getBtype() const { return btype; }   //这三行是调用值
+	CDROM_Ctype getCtype() const { return ctype; }  
+	int getStorage() const { return storage; }     
+
+	void setBtype(CDROM_Btype bt) { btype = bt; }  //这三行是改变值
+	void setCtype(CDROM_Ctype ct) { ctype = ct; }
+	void setStorage(int s) { storage = s; }
+
+	void run() { cout << "CDROM开始工作" << endl; }
+	void end() { cout << "CDROM停止工作" << endl; }
+};
+
+class COMPUTER {
+private:
+	CPU my_cpu;
+	RAM my_ram;
+	CDROM my_cdrom;
+	unsigned int storage_size;//GB
+	unsigned int bandwith;//MB
+
+public:
+	COMPUTER(CPU c, RAM a, CDROM cd, unsigned int s, unsigned int b);
+	~COMPUTER() {
+		cout << "computer析构成功" << endl;
+		cout << "**********************************************" << endl;
+	}
+
+	void run() {
+		cout << "computer开始运行！！！！！" << endl;
+		cout << "**********************************************" << endl;
+		my_cpu.run();
+		my_ram.run();
+		my_cdrom.run();
+	}
+	void end() {
+		cout << "computer开始关机！！！！！" << endl;
+		cout << "**********************************************" << endl;
+		my_cpu.end();
+		my_ram.end();
+		my_cdrom.end();
+		cout << "computer关机成功！！！！！" << endl;
+		cout << "**********************************************" << endl;
+	}
+};
+
+COMPUTER::COMPUTER(CPU c, RAM a, CDROM cd, unsigned int s, unsigned int b):
+	my_cpu(c),my_ram(a),my_cdrom(cd)
+{
+	storage_size = s;
+	bandwith = b;
+	cout << "computer构造成功" << endl;
+}
+
+int main()
+{
+	CPU a(P6, 300, 2.9);
+	RAM b(DDR4, 8, 1600);
+	CDROM d(external, SATA, 8);
+	
+
+	a.run();
+	a.end();
+  
+	b.run();
+	b.end();
+
+	d.run();
+	d.end();
+
+	COMPUTER my_computer(a, b, d, 500, 8);
+	my_computer.run();
+	my_computer.end();
+
+	return 0; //析构时按 栈 顺序，先进后出，先构造初始化的的后析构
+}
+
